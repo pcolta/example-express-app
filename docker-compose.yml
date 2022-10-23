@@ -1,0 +1,45 @@
+version: '3'
+services:
+
+  backend:
+    container_name: backend
+    image: example-express-app
+    build: .
+    command: ["yarn", "start", "app.ts"]
+    volumes:
+      - .:/app/
+      - node_modules_backend:/app/node_modules
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+
+  database:
+    container_name: database
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: example-express-app
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - '3306:3306'
+#    volumes:
+#      - my-db:/var/lib/mysql
+
+  dbadmin:
+    container_name: dbadmin
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: database
+      PMA_PORT: 3306
+    ports:
+      - 8081:80
+    depends_on:
+      - database
+
+
+volumes:
+  node_modules_backend:
